@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 24-11-2026 a las 20:24:14
+-- Tiempo de generación: 25-11-2026 a las 03:05:55
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -24,67 +24,66 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `consumo_ingredientes`
+-- Estructura de tabla para la tabla `consumo_detalle`
 --
 
-CREATE TABLE `consumo_ingredientes` (
+CREATE TABLE `consumo_detalle` (
   `id_consumo` int(11) NOT NULL,
   `id_lote` int(11) NOT NULL,
   `id_ingrediente` int(11) NOT NULL,
-  `cantidad_utilizada` decimal(10,3) NOT NULL
+  `cantidad_consumida` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `ingredientes`
+-- Estructura de tabla para la tabla `ingrediente`
 --
 
-CREATE TABLE `ingredientes` (
+CREATE TABLE `ingrediente` (
   `id_ingrediente` int(11) NOT NULL,
   `nombre` varchar(100) NOT NULL,
-  `unidad_medida` varchar(20) NOT NULL
+  `unidad_medida` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `lotes_produccion`
+-- Estructura de tabla para la tabla `lote_produccion`
 --
 
-CREATE TABLE `lotes_produccion` (
+CREATE TABLE `lote_produccion` (
   `id_lote` int(11) NOT NULL,
   `id_producto` int(11) NOT NULL,
   `fecha_produccion` date NOT NULL,
-  `cantidad_programada` int(11) NOT NULL,
-  `cantidad_producida` int(11) DEFAULT 0,
-  `estado` varchar(30) DEFAULT 'Programado'
+  `cantidad_planificada` decimal(10,2) DEFAULT NULL,
+  `cantidad_producida` decimal(10,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `productos`
+-- Estructura de tabla para la tabla `producto`
 --
 
-CREATE TABLE `productos` (
+CREATE TABLE `producto` (
   `id_producto` int(11) NOT NULL,
   `nombre` varchar(100) NOT NULL,
-  `descripcion` varchar(200) DEFAULT NULL,
-  `precio` decimal(10,2) NOT NULL
+  `descripcion` varchar(255) DEFAULT NULL,
+  `unidad_producto` varchar(50) DEFAULT NULL,
+  `estado` varchar(30) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `recetas`
+-- Estructura de tabla para la tabla `receta_detalle`
 --
 
-CREATE TABLE `recetas` (
-  `id_receta` int(11) NOT NULL,
+CREATE TABLE `receta_detalle` (
   `id_producto` int(11) NOT NULL,
   `id_ingrediente` int(11) NOT NULL,
-  `cantidad_necesaria` decimal(10,3) NOT NULL
+  `cantidad_por_unidad` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -92,38 +91,37 @@ CREATE TABLE `recetas` (
 --
 
 --
--- Indices de la tabla `consumo_ingredientes`
+-- Indices de la tabla `consumo_detalle`
 --
-ALTER TABLE `consumo_ingredientes`
+ALTER TABLE `consumo_detalle`
   ADD PRIMARY KEY (`id_consumo`),
-  ADD UNIQUE KEY `id_lote` (`id_lote`,`id_ingrediente`),
+  ADD KEY `id_lote` (`id_lote`),
   ADD KEY `id_ingrediente` (`id_ingrediente`);
 
 --
--- Indices de la tabla `ingredientes`
+-- Indices de la tabla `ingrediente`
 --
-ALTER TABLE `ingredientes`
+ALTER TABLE `ingrediente`
   ADD PRIMARY KEY (`id_ingrediente`);
 
 --
--- Indices de la tabla `lotes_produccion`
+-- Indices de la tabla `lote_produccion`
 --
-ALTER TABLE `lotes_produccion`
+ALTER TABLE `lote_produccion`
   ADD PRIMARY KEY (`id_lote`),
   ADD KEY `id_producto` (`id_producto`);
 
 --
--- Indices de la tabla `productos`
+-- Indices de la tabla `producto`
 --
-ALTER TABLE `productos`
+ALTER TABLE `producto`
   ADD PRIMARY KEY (`id_producto`);
 
 --
--- Indices de la tabla `recetas`
+-- Indices de la tabla `receta_detalle`
 --
-ALTER TABLE `recetas`
-  ADD PRIMARY KEY (`id_receta`),
-  ADD UNIQUE KEY `id_producto` (`id_producto`,`id_ingrediente`),
+ALTER TABLE `receta_detalle`
+  ADD PRIMARY KEY (`id_producto`,`id_ingrediente`),
   ADD KEY `id_ingrediente` (`id_ingrediente`);
 
 --
@@ -131,58 +129,52 @@ ALTER TABLE `recetas`
 --
 
 --
--- AUTO_INCREMENT de la tabla `consumo_ingredientes`
+-- AUTO_INCREMENT de la tabla `consumo_detalle`
 --
-ALTER TABLE `consumo_ingredientes`
+ALTER TABLE `consumo_detalle`
   MODIFY `id_consumo` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `ingredientes`
+-- AUTO_INCREMENT de la tabla `ingrediente`
 --
-ALTER TABLE `ingredientes`
+ALTER TABLE `ingrediente`
   MODIFY `id_ingrediente` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `lotes_produccion`
+-- AUTO_INCREMENT de la tabla `lote_produccion`
 --
-ALTER TABLE `lotes_produccion`
+ALTER TABLE `lote_produccion`
   MODIFY `id_lote` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `productos`
+-- AUTO_INCREMENT de la tabla `producto`
 --
-ALTER TABLE `productos`
+ALTER TABLE `producto`
   MODIFY `id_producto` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `recetas`
---
-ALTER TABLE `recetas`
-  MODIFY `id_receta` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- Restricciones para tablas volcadas
 --
 
 --
--- Filtros para la tabla `consumo_ingredientes`
+-- Filtros para la tabla `consumo_detalle`
 --
-ALTER TABLE `consumo_ingredientes`
-  ADD CONSTRAINT `consumo_ingredientes_ibfk_1` FOREIGN KEY (`id_lote`) REFERENCES `lotes_produccion` (`id_lote`),
-  ADD CONSTRAINT `consumo_ingredientes_ibfk_2` FOREIGN KEY (`id_ingrediente`) REFERENCES `ingredientes` (`id_ingrediente`);
+ALTER TABLE `consumo_detalle`
+  ADD CONSTRAINT `consumo_detalle_ibfk_1` FOREIGN KEY (`id_lote`) REFERENCES `lote_produccion` (`id_lote`),
+  ADD CONSTRAINT `consumo_detalle_ibfk_2` FOREIGN KEY (`id_ingrediente`) REFERENCES `ingrediente` (`id_ingrediente`);
 
 --
--- Filtros para la tabla `lotes_produccion`
+-- Filtros para la tabla `lote_produccion`
 --
-ALTER TABLE `lotes_produccion`
-  ADD CONSTRAINT `lotes_produccion_ibfk_1` FOREIGN KEY (`id_producto`) REFERENCES `productos` (`id_producto`);
+ALTER TABLE `lote_produccion`
+  ADD CONSTRAINT `lote_produccion_ibfk_1` FOREIGN KEY (`id_producto`) REFERENCES `producto` (`id_producto`);
 
 --
--- Filtros para la tabla `recetas`
+-- Filtros para la tabla `receta_detalle`
 --
-ALTER TABLE `recetas`
-  ADD CONSTRAINT `recetas_ibfk_1` FOREIGN KEY (`id_producto`) REFERENCES `productos` (`id_producto`),
-  ADD CONSTRAINT `recetas_ibfk_2` FOREIGN KEY (`id_ingrediente`) REFERENCES `ingredientes` (`id_ingrediente`);
+ALTER TABLE `receta_detalle`
+  ADD CONSTRAINT `receta_detalle_ibfk_1` FOREIGN KEY (`id_producto`) REFERENCES `producto` (`id_producto`),
+  ADD CONSTRAINT `receta_detalle_ibfk_2` FOREIGN KEY (`id_ingrediente`) REFERENCES `ingrediente` (`id_ingrediente`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
